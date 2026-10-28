@@ -1,0 +1,153 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Rumo à Prova! Reported Speech</title>
+<style>
+:root{--bg:#f4f7ff;--card:#fff;--tx:#1d2340;--mut:#5b6385;--pri:#5b5bf0;--ok:#15803d;--okb:#dcfce7;--no:#b91c1c;--nob:#fee2e2;--br:#d9def5;--dir:#e0ecff;--rep:#dcfce7;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12142a;--card:#1c2040;--tx:#eef0ff;--mut:#a5abd0;--pri:#9a9aff;--ok:#86efac;--okb:#12391f;--no:#fca5a5;--nob:#431a1a;--br:#2e3466;--dir:#1e3a6e;--rep:#14532d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12142a;--card:#1c2040;--tx:#eef0ff;--mut:#a5abd0;--pri:#9a9aff;--ok:#86efac;--okb:#12391f;--no:#fca5a5;--nob:#431a1a;--br:#2e3466;--dir:#1e3a6e;--rep:#14532d;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--tx);font:18px/1.5 "Trebuchet MS","Segoe UI",system-ui,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:10px;align-items:center;padding:10px 14px;background:var(--card);border-bottom:2px solid var(--br)}
+header b{flex:1;font-size:1rem}#hm{background:var(--pri);color:#fff;border:0;border-radius:12px;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}
+#bar{height:8px;background:var(--br)}#bar i{display:block;height:100%;width:0;background:#f59e0b;transition:width .4s}
+main{max-width:760px;margin:0 auto;padding:16px}h1{font-size:1.5rem;margin:.3em 0}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.b{background:var(--card);border:2px solid var(--br);border-radius:16px;padding:14px 10px;font:inherit;color:var(--tx);cursor:pointer;text-align:center;font-weight:700}
+.b:hover{border-color:var(--pri)}.b small{display:block;color:var(--mut);font-weight:400}
+.card{background:var(--card);border:2px solid var(--br);border-radius:18px;padding:18px;margin:10px 0}
+.main{background:var(--pri);color:#fff;border:0;border-radius:14px;padding:12px 22px;font:inherit;font-weight:700;cursor:pointer;margin:8px 6px 0 0}.main.g2{background:var(--card);color:var(--tx);border:2px solid var(--br)}
+.opt{display:block;width:100%;margin:8px 0;text-align:left}.opt.ok{background:var(--okb);border-color:var(--ok)}.opt.no{background:var(--nob);border-color:var(--no)}
+.fb{padding:12px 14px;border-radius:14px;margin-top:12px;font-weight:600}.fb.ok{background:var(--okb);color:var(--ok)}.fb.no{background:var(--nob);color:var(--no)}.fb span{font-weight:400;color:var(--tx)}
+.dir,.rep{padding:8px 12px;border-radius:12px;margin:6px 0}.dir{background:var(--dir)}.rep{background:var(--rep)}
+table{border-collapse:collapse;width:100%;font-size:.95rem}td,th{border:1px solid var(--br);padding:6px 8px}th{background:var(--dir)}
+.tk{display:inline-block;background:var(--card);border:2px solid var(--pri);border-radius:12px;padding:6px 12px;margin:4px;font:inherit;color:var(--tx);cursor:pointer;font-weight:600}.tk.sel{background:var(--pri);color:#fff}
+#ans{min-height:64px;border:2px dashed var(--br);border-radius:14px;padding:6px;margin:10px 0}
+input{font:inherit;padding:10px 12px;border:2px solid var(--pri);border-radius:12px;width:100%;background:var(--card);color:var(--tx);margin-top:8px}
+.big{font-size:3.2rem;text-align:center}.c{text-align:center}mark{background:#fde68a;color:#1d2340;border-radius:6px;padding:0 4px}.bad{background:var(--nob);color:var(--no);padding:8px 12px;border-radius:12px}
+</style></head><body>
+<header><button id="hm" onclick="home()">🏠 Menu</button><b id="ttl"></b><span id="sc"></span></header><div id="bar"><i></i></div><main id="app"></main>
+<script>
+const $=s=>document.querySelector(s),app=$('#app');
+let pts=0,streak=0,saved={},t0=Date.now();try{saved=JSON.parse(localStorage.getItem('tfp')||'{}')}catch(e){}
+const sv=()=>{try{localStorage.setItem('tfp',JSON.stringify(saved))}catch(e){}};
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const OK=['Boa! 🎉','Isso aí! 🔥','Perfeito! ⭐','Mandou bem! 💪','Arrasou! 🚀'],NO=['Quase! 💡','Opa, vamos aprender com essa! 🧠'];
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const prog=p=>$('#bar i').style.width=(p*100)+'%';
+const clk=()=>{const s=Math.floor((Date.now()-t0)/1000);return '⏱'+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+const hud=()=>$('#sc').textContent=clk()+' ⭐'+pts+' 🔥'+streak;setInterval(hud,1000);
+const show=h=>{app.innerHTML=h;scrollTo(0,0);hud()};
+function hit(ok){if(ok){pts+=10;streak++}else streak=0;hud();return ok?pick(OK)+(streak>=3?' Combo x'+streak+'!':'')+' +10':pick(NO)}
+const T=(h,r)=>`<table><tr>${h.map(x=>'<th>'+x+'</th>').join('')}</tr>${r.map(x=>'<tr>'+x.map(y=>'<td>'+y+'</td>').join('')+'</tr>').join('')}</table>`;
+const D=t=>`<div class=dir>🗣️ ${t}</div>`,R=t=>`<div class=rep>📝 ${t}</div>`;
+const nm=s=>s.toLowerCase().replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim();
+const P3=['verb + to','verb + object + to','verb + that'];
+
+const S=[
+{i:'📘',t:'Resumo rápido',m:5,x:[
+`<h1>🔤 Reporting verbs</h1>${T(['Verbo','Significado'],[['announce','anunciar publicamente'],['point out','destacar / lembrar um fato'],['complain','reclamar (insatisfeito)'],['reply','responder'],['deny','negar'],['admit','admitir'],['confirm','confirmar'],['claim','alegar'],['argue','argumentar (dar razões)'],['insist','insistir'],['recommend','recomendar'],['warn','alertar'],['remind','lembrar alguém de fazer'],['order','ordenar'],['persuade','convencer']])}`,
+`<h1>🧩 3 padrões</h1>${T(['verb + to','verb + object + to','verb + that'],[['agree, offer, promise, refuse','advise, ask, invite, tell, warn, remind, order, persuade','admit, explain, say, suggest, announce, complain, reply']])}${R('She <mark>promised to</mark> call. · He <mark>advised us to</mark> revise. · He <mark>admitted that</mark> he had…')}`,
+`<h1>⏪ Mudanças</h1>${T(['Direct','Reported'],[['present simple','past simple'],['present continuous','past continuous'],['past simple / present perfect','past perfect'],['will','would'],['can','could'],['must / have to','had to'],['now','then'],['tomorrow','the next day'],['yesterday','the day before'],['last weekend','the weekend before'],['next month','the following month']])}<p>💡 “today” continua “today” se for o mesmo dia.</p>`,
+`<h1>🎯 Dicas de prova</h1><p>❌ <b>said me</b> → ✅ <b>told me</b> / said <i>to</i> me<br>❌ told me <b>don’t</b> → ✅ told me <b>not to</b><br>❌ agreed <b>meeting</b> → ✅ agreed <b>to meet</b><br>❌ asked where <b>was I</b> → ✅ asked where <b>I was</b><br>❌ “?” e do/did em perguntas reportadas<br>✅ Sempre confira: <b>verbo, tempo, pronome, tempo/lugar</b>.</p>`]},
+{i:'🔤',t:'Verbos de reporte',m:8,items:[
+['mc','The headteacher gathered everyone to ___ that sports day had been cancelled.','announce',['deny','reply','promise'],'announce = anunciar publicamente.'],
+['mc','Mark wanted to ___ that the bus was always five minutes late.','point out',['invite','advise','promise'],'point out = destacar um fato.'],
+['mc','The customer called the manager to ___ about the cold soup.','complain',['confirm','admit','claim'],'complain = reclamar.'],
+['mc','I asked Sarah if she was free, and she ___ that she was busy.','replied',['argued','offered','warned'],'reply = responder.'],
+['mc','The suspect ___ breaking the window and swore he was innocent.','denied',['confirmed','recommended','persuaded'],'deny = negar.'],
+['mc','Which restaurant would you ___ for our family dinner?','recommend',['insist','tell','ask'],'recommend = recomendar.'],
+['mc','‘Yes, I broke it. I’m sorry.’ → He ___ that he had broken it.','admitted',['denied','refused','offered'],'admit = admitir.'],
+['mc','‘Yes, the meeting is at five.’ → She ___ that the meeting was at five.','confirmed',['denied','refused','warned'],'confirm = confirmar.'],
+['mc','‘Be careful! The floor is wet.’ → He ___ us that the floor was wet.','warned',['replied','admitted','offered'],'warn = alertar.'],
+['mc','After a long talk, Tom ___ me to join the club.','persuaded',['denied','announced','replied'],'persuade = convencer.'],
+['mc','‘Don’t forget your books!’ → The teacher ___ us to bring our books.','reminded',['denied','announced','claimed'],'remind = lembrar alguém.'],
+['mc','‘Stop talking now!’ → The teacher ___ the students to stop talking.','ordered',['denied','replied','admitted'],'order = ordenar.'],
+['mc','Qual verbo = “dizer que algo não é verdade”?','deny',['admit','confirm','agree'],'deny = negar.'],
+['mc','Qual verbo = “dar razões para explicar no que você acredita”?','argue',['announce','complain','refuse'],'argue = argumentar.'],
+['mc','Qual verbo = “dizer que algo é bom ou adequado”?','recommend',['reply','claim','deny'],'recommend = recomendar.'],
+['mc','Qual verbo = “dizer que está insatisfeito”?','complain',['announce','reply','confirm'],'complain = reclamar.']]},
+{i:'🧩',t:'Padrões verbais',m:8,items:[
+['mc','She promised ___ me as soon as she arrived.','to call',['calling','me to call','that call'],'promise + to.'],
+['mc','The teacher advised us ___ the vocabulary.','to revise',['revise','that revise','revising'],'advise + objeto + to.'],
+['mc','Lucas admitted ___ the wrong coat by mistake.','that he had taken',['to take','him to take','taking'],'admit + that + oração.'],
+['mc','The coach told the players ___ faster.','to run',['run','that run','running'],'tell + objeto + to.'],
+['mc','He refused ___ his brother more pocket money.','to lend',['lending','his brother to lend','that lend'],'refuse + to.'],
+['mc','They agreed ___ outside the cinema.','to meet',['meeting','that meet','us to meet'],'agree + to.'],
+['mc','Maya invited her classmates ___ to her party.','to come',['coming','that come','come'],'invite + objeto + to.'],
+['mc','The scientist explained ___ completely safe.','that the experiment was',['to be','the experiment to be','was'],'explain + that.'],
+['mc','Liam offered ___ the heavy bags.','to carry',['carrying','that carry','him to carry'],'offer + to.'],
+['mc','The doctor warned him ___ in bed for two days.','to stay',['stay','that stay','staying'],'warn + objeto + to.'],
+['mc','Qual padrão? <b>agree</b>','verb + to',['verb + object + to','verb + that'],'agree, offer, promise, refuse = verb + to.'],
+['mc','Qual padrão? <b>persuade</b>','verb + object + to',['verb + to','verb + that'],'persuade + pessoa + to.'],
+['mc','Qual padrão? <b>suggest</b>','verb + that',['verb + to','verb + object + to'],'suggest + that.'],
+['mc','Qual padrão? <b>invite</b>','verb + object + to',['verb + to','verb + that'],'invite + pessoa + to.']]},
+{i:'⏪',t:'Mudança de tempos',m:10,brk:1,items:[
+['mc','“I love playing video games.” → Ben said that he ___ playing video games.','loved',['loves','had loved','would love'],'present simple → past simple.'],
+['mc','“We are watching a documentary right now.” → They explained that they ___ a documentary then.','were watching',['are watching','had watched','watched'],'present continuous → past continuous.'],
+['mc','“I visited my grandparents last weekend.” → Sophie said she ___ her grandparents the weekend before.','had visited',['visited','has visited','would visit'],'past simple → past perfect.'],
+['mc','“I have lost my locker key!” → Daniel complained that he ___ his locker key.','had lost',['has lost','lost','would lose'],'present perfect → past perfect.'],
+['mc','“The new shopping centre will open next month.” → The reporter announced that it ___ the following month.','would open',['will open','opened','had opened'],'will → would.'],
+['mc','“You can download the app for free.” → She confirmed that we ___ download the app for free.','could',['can','would','had'],'can → could.'],
+['mc','“I must finish this assignment before tomorrow.” → Elena said she ___ finish it before the next day.','had to',['must','has to','should'],'must → had to.'],
+['mc','“We have to clean our bedrooms.” → The boys argued that they ___ clean their bedrooms.','had to',['have to','must','has to'],'have to → had to.'],
+['mc','“I’m going to Rio tomorrow.” → Ana said she ___ going to Rio the next day.','was',['is','were','had been'],'am → was.'],
+['mc','“We’ve finished the project.” → They said they ___ the project.','had finished',['have finished','finished','would finish'],'present perfect → past perfect.'],
+['mc','“I don’t like this song.” → He said he ___ like that song.','didn’t',['don’t','doesn’t','hadn’t'],'don’t → didn’t.'],
+['mc','“I’ll help you next week.” → She said she ___ me the following week.','would help',['will help','helped','had helped'],'will → would.'],
+['mc','“We saw him yesterday.” → They said they had seen him ___.','the day before',['yesterday','the next day','then'],'yesterday → the day before.'],
+['mc','“I’m tired now.” → She said she was tired ___.','then',['now','here','tomorrow'],'now → then.']]},
+{i:'🔍',t:'Ache o erro',m:8,items:[
+['mc','<div class=bad>✗ She said me that she was feeling ill.</div>Qual é a correção?','She told me that she was feeling ill.',['She said me that she is feeling ill.','She told that she was feeling ill.','She told me that she is feeling ill.'],'said + (to me); told + me.'],
+['mc','<div class=bad>✗ Mark explained that he has bought a smartphone yesterday.</div>Qual é a correção?','Mark explained that he had bought a smartphone the day before.',['Mark explained that he bought a smartphone yesterday.','Mark explained that he has bought a smartphone the day before.','Mark explained that he would buy a smartphone yesterday.'],'has bought → had bought; yesterday → the day before.'],
+['mc','<div class=bad>✗ The officer told the driver don’t park in front of the gate.</div>Qual é a correção?','The officer told the driver not to park in front of the gate.',['The officer told the driver to don’t park in front of the gate.','The officer told the driver no park in front of the gate.','The officer told that the driver not to park in front of the gate.'],'tell + pessoa + not to.'],
+['mc','<div class=bad>✗ We agreed meeting at the library.</div>Qual é a correção?','We agreed to meet at the library.',['We agreed that meet at the library.','We agreed us to meet at the library.','We agreed to meeting at the library.'],'agree + to + verbo.'],
+['mc','<div class=bad>✗ Mum asked me to I tidy up my bedroom.</div>Qual é a correção?','Mum asked me to tidy up my bedroom.',['Mum asked me that I tidy up my bedroom.','Mum asked to me tidy up my bedroom.','Mum asked me tidy up my bedroom.'],'ask + pessoa + to + verbo.'],
+['mc','<div class=bad>✗ He asked where was I going.</div>Qual é a correção?','He asked where I was going.',['He asked where did I go.','He asked where I am going.','He asked where was I going?'],'Sem inversão.'],
+['mc','<div class=bad>✗ She asked me if did I like pizza.</div>Qual é a correção?','She asked me if I liked pizza.',['She asked me if I like pizza.','She asked me did I like pizza.','She asked me if I did like pizza?'],'Sem did e verbo no passado.'],
+['mc','<div class=bad>✗ They said they will come.</div>Qual é a correção?','They said they would come.',['They said they come.','They said they had come.','They said they will came.'],'will → would.'],
+['mc','<div class=bad>✗ He told that he was tired.</div>Qual é a correção?','He told me that he was tired.',['He told to me that he was tired.','He said me that he was tired.','He told me that he is tired.'],'told precisa de pessoa.'],
+['mc','<div class=bad>✗ The teacher suggested us to study more.</div>Qual é a correção?','The teacher suggested that we should study more.',['The teacher suggested us study more.','The teacher suggested to us studying more.','The teacher suggested that we to study more.'],'suggest + that + should.'],
+['mc','<div class=bad>✗ I offered helping her.</div>Qual é a correção?','I offered to help her.',['I offered her to help.','I offered that help her.','I offered to helping her.'],'offer + to + verbo.'],
+['mc','<div class=bad>✗ She asked what time does the film start.</div>Qual é a correção?','She asked what time the film started.',['She asked what time did the film start.','She asked what time the film starts?','She asked what time started the film.'],'Ordem normal, sem does.']]},
+{i:'🗣️',t:'Ordens, pedidos, ofertas',m:8,brk:1,items:[
+['or','<b>remind / us</b><br>“Please remember to bring your permission slips tomorrow.”','The teacher reminded us to bring our permission slips the next day.','remind + pessoa + to; tomorrow → the next day.'],
+['or','<b>warn / me</b><br>“Don’t touch that hot pan!”','She warned me not to touch that hot pan.','warn + pessoa + not to.'],
+['or','<b>offer</b><br>“Shall I help you carry those books?”','He offered to help me carry those books.','offer + to.'],
+['or','<b>suggest that</b><br>“Why don’t we create a study group?”','She suggested that we should create a study group.','suggest + that + should.'],
+['or','<b>order / the students</b><br>“Turn off your mobile phones immediately!”','The teacher ordered the students to turn off their mobile phones immediately.','order + pessoa + to.'],
+['or','<b>ask / him</b><br>“Could you open the window, please?”','She asked him to open the window.','ask + pessoa + to.'],
+['or','<b>advise / us</b><br>“You should revise the vocabulary.”','The teacher advised us to revise the vocabulary.','advise + pessoa + to.'],
+['or','<b>invite / them</b><br>“Come to my birthday party!”','She invited them to come to her party.','invite + pessoa + to.']]},
+{i:'📝',t:'Parágrafo do David',m:5,items:[
+['or','Parte 1 de 5 · “I am planning a surprise party for Clara.”','David told me that he was planning a surprise party for Clara.','am planning → was planning.'],
+['or','Parte 2 de 5 · “I have already booked the hall and ordered the cake.”','He said that he had already booked the hall and ordered the cake.','present perfect → past perfect.'],
+['or','Parte 3 de 5 · “…but I need some help with decorations.”','He said he needed some help with decorations.','need → needed.'],
+['or','Parte 4 de 5 · “Can you come early on Saturday?”','He asked me to come early on Saturday.','Pedido → ask + pessoa + to.'],
+['or','Parte 5 de 5 · “We will have an amazing time!”','He added that we would have an amazing time.','will → would; add that.']]},
+{i:'🏆',t:'Simulado final',m:8,sim:1}];
+
+const st=n=>'★'.repeat(n)+'☆'.repeat(3-n);
+function home(){$('#ttl').textContent='⏳ Rumo à Prova!';$('#hm').style.visibility='hidden';prog(0);
+show('<h1>Missões de 1 hora 🚀</h1><div class=g>'+S.map((s,n)=>`<button class=b onclick="go(${n})">${s.i} ${n}. ${s.t}<small>~${s.m} min ${s.x?'':st(saved[n]||0)}</small></button>`).join('')+'</div>')}
+function go(n){const s=S[n];$('#hm').style.visibility='visible';$('#ttl').textContent=s.i+' '+s.t;
+if(s.x)return expl(n,0);
+if(s.sim)return run(shuf([1,2,3,4].flatMap(k=>S[k].items)).slice(0,20),n);
+run(shuf(s.items).sort((a,b)=>n==6?s.items.indexOf(a)-s.items.indexOf(b):0),n)}
+function expl(n,k){const s=S[n],l=k==s.x.length-1;prog((k+1)/s.x.length);
+show(`<div class=card>${s.x[k]}</div><div class=c>${k?`<button class="main g2" onclick="expl(${n},${k-1})">⬅️ Voltar</button>`:''}${l?`<button class=main onclick="go(${n+1})">Começar missão ${n+1} ▶</button>`:`<button class=main onclick="expl(${n},${k+1})">Próximo ➡️</button>`}</div>`)}
+function fin(n,r,t){const p=r/t,s=p>=.9?3:p>=.6?2:1;saved[n]=Math.max(saved[n]||0,s);sv();prog(1);
+show(`<div class=card><div class=big>${s==3?'🏆':s==2?'🎉':'💪'}</div><h1 class=c>${r} de ${t} certos!</h1><p class=c style="font-size:2rem">${st(s)}</p><p class=c>${s==3?'Incrível! Você dominou essa missão!':s==2?'Muito bem! Mais uma vez e fica 3 estrelas!':'Bom começo! Releia o resumo e tente de novo.'}</p>${S[n].brk?'<p class=c><b>🧘 Pausa de 2 min:</b> levante, beba água e alongue!</p>':''}</div><div class=c>${S[n+1]?`<button class=main onclick="go(${n+1})">Próxima missão ▶</button>`:''}<button class="main g2" onclick="go(${n})">🔁 Jogar de novo</button><button class="main g2" onclick="home()">🏠 Menu</button></div>`)}
+function run(items,n){let i=0,r=0;
+const fb=(ok,c,tip)=>{if(ok)r++;$('#f').innerHTML=`<div class="fb ${ok?'ok':'no'}">${hit(ok)}<br><span>${ok?'':'Resposta: <b>'+c+'</b>. '}💡 ${tip}</span></div><button class=main id=nx>${i+1<items.length?'Próxima ➡️':'Ver resultado 🏁'}</button>`;
+$('#nx').onclick=()=>{i++;i<items.length?draw():fin(n,r,items.length)};$('#nx').focus()};
+const draw=()=>{prog(i/items.length);const it=items[i],t=it[0],h=`<p><b>${i+1}/${items.length}</b></p>`;
+if(t=='mc'){const [,q,c,w,tip]=it;show(`<div class=card>${h}<p>${q}</p>${shuf([c,...w]).map(o=>`<button class="b opt" data-o="${o}">${o}</button>`).join('')}<div id=f></div></div>`);
+document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=b.dataset.o==c;document.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(x.dataset.o==c)x.classList.add('ok')});if(!ok)b.classList.add('no');fb(ok,c,tip)})}
+else if(t=='fi'){const [,q,a,tip]=it;show(`<div class=card>${h}<p>${q}</p><input id=in autocomplete=off autocapitalize=off placeholder="Digite aqui…"><button class=main id=ck>Verificar ✅</button><div id=f></div></div>`);$('#in').focus();
+const chk=()=>{const v=nm($('#in').value);if(!v)return;const ok=a.some(x=>nm(x)==v);$('#in').disabled=true;$('#ck').remove();fb(ok,a[0],tip)};$('#ck').onclick=chk;$('#in').onkeydown=e=>{if(e.key=='Enter'&&!$('#in').disabled)chk()}}
+else{const [,q,c,tip]=it;let pool=shuf(c.split(' ')).map((x,k)=>({t:x,n:k})),an=[];
+show(`<div class=card>${h}<p>${q}</p><p style="color:var(--mut)">Toque nas palavras para montar a frase:</p><div id=ans></div><div id=pl></div><div id=f></div><button class=main id=ck>Verificar ✅</button><button class="main g2" id=cl>Limpar</button></div>`);
+const rd=()=>{$('#ans').innerHTML=an.map(x=>`<button class="tk sel" data-n="${x.n}">${x.t}</button>`).join('');$('#pl').innerHTML=pool.map(x=>`<button class=tk data-n="${x.n}">${x.t}</button>`).join('');
+$('#ans').querySelectorAll('.tk').forEach(b=>b.onclick=()=>{const k=an.findIndex(x=>x.n==b.dataset.n);pool.push(...an.splice(k,1));rd()});
+$('#pl').querySelectorAll('.tk').forEach(b=>b.onclick=()=>{const k=pool.findIndex(x=>x.n==b.dataset.n);an.push(...pool.splice(k,1));rd()})};rd();
+$('#cl').onclick=()=>{pool.push(...an);an=[];rd()};
+$('#ck').onclick=()=>{if(!an.length)return;const ok=an.map(x=>x.t).join(' ')==c;$('#ck').remove();$('#cl').remove();document.querySelectorAll('.tk').forEach(x=>x.disabled=true);fb(ok,c,tip)}}};draw()}
+home();
+</script></body></html>
